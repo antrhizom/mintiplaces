@@ -1,1 +1,169 @@
+<!-- =========================
+File path: docs/mathe/index.html
+Startseite für Mathematik mit Kachel-Layout, u.a. für Pythagoras
+========================= -->
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mathe – Übersicht</title>
+  <style>
+    :root { --bg:#0f172a; --card:#111827; --ink:#e5e7eb; --muted:#94a3b8; --accent:#38bdf8; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font: 16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif; background: var(--bg); color: var(--ink); }
+    header { position: sticky; top: 0; backdrop-filter: blur(8px); background: color-mix(in oklab, var(--bg) 85%, black 15%); border-bottom: 1px solid #1f2937; }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 1rem; }
+    nav a { color: var(--ink); text-decoration: none; padding: .5rem .75rem; border-radius: .6rem; display: inline-block; }
+    nav a:hover, nav a[aria-current="page"] { background: #1f2937; color: white; }
+    h1 { font-size: clamp(1.6rem, 2vw + 1rem, 2.4rem); margin: 1rem 0; }
+    ul.cards { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap: 1rem; }
+    .card { background: var(--card); border: 1px solid #1f2937; border-radius: 16px; padding: 1rem; box-shadow: 0 10px 24px rgba(0,0,0,.25); }
+    .card h2 { margin-top: 0; font-size: 1.25rem; }
+    .muted { color: var(--muted); }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <nav aria-label="Navigation">
+        <a href="../index.html">Start</a>
+        <a href="./index.html" aria-current="page">Mathe</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <h1>Mathematik</h1>
+    <p class="muted">Wähle ein Thema, um mehr zu lernen.</p>
+    <ul class="cards">
+      <li class="card">
+        <h2>Pythagoras</h2>
+        <p class="muted">Rechtwinklige Dreiecke – interaktiv üben und verstehen.</p>
+        <p><a href="./pythagoras.html">Zur Lernseite →</a></p>
+      </li>
+      <li class="card">
+        <h2>Geometrie</h2>
+        <p class="muted">Grundlagen zu Flächen, Winkeln und Körpern.</p>
+        <p><a href="#">(Platzhalter)</a></p>
+      </li>
+      <li class="card">
+        <h2>Algebra</h2>
+        <p class="muted">Terme, Gleichungen und Funktionen.</p>
+        <p><a href="#">(Platzhalter)</a></p>
+      </li>
+    </ul>
+  </main>
+</body>
+</html>
+
+<!-- =========================
+File path: docs/mathe/index.html
+Mathe-Startseite mit Kacheln (inkl. Link zu ./pythagoras.html). Kann bestehende Datei ersetzen.
+========================= -->
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mathe – Übersicht</title>
+  <meta name="description" content="Übersichtsseite für Mathe mit Kacheln. Enthält Link zur interaktiven Pythagoras-Seite." />
+  <style>
+    :root { --bg:#0f172a; --card:#111827; --ink:#e5e7eb; --muted:#94a3b8; --accent:#38bdf8; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font: 16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif; background: var(--bg); color: var(--ink); }
+    header { position: sticky; top: 0; backdrop-filter: blur(8px); background: color-mix(in oklab, var(--bg) 85%, black 15%); border-bottom: 1px solid #1f2937; }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 1rem; }
+    nav a { color: var(--ink); text-decoration: none; padding: .5rem .75rem; border-radius: .6rem; display: inline-block; }
+    nav a:hover, nav a[aria-current="page"] { background: #1f2937; color: white; }
+    h1 { font-size: clamp(1.6rem, 2vw + 1rem, 2.4rem); margin: 1rem 0; }
+    .muted { color: var(--muted); }
+    .tools { display:flex; gap:.6rem; align-items:center; flex-wrap:wrap }
+    input[type="search"] { width: 280px; max-width: 100%; padding: .6rem .8rem; border-radius: .6rem; border: 1px solid #243041; background: #0a1426; color: var(--ink); }
+    .grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-top: 1rem; }
+    .card { background: var(--card); border: 1px solid #1f2937; border-radius: 16px; padding: 1rem; box-shadow: 0 10px 24px rgba(0,0,0,.25); transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease; }
+    a.card { color: inherit; text-decoration: none; display: block; }
+    .card:hover { transform: translateY(-2px); border-color: #334155; box-shadow: 0 14px 26px rgba(0,0,0,.35); }
+    .card h2 { margin:.2rem 0 .3rem; font-size: 1.15rem; }
+    .tag { display:inline-block; margin-left:.4rem; padding:.15rem .5rem; border-radius: 999px; background:#0b2544; color: var(--accent); font-size:.8rem }
+    .soon { background:#1e293b; color:#cbd5e1 }
+    .disabled { opacity:.55; pointer-events:none }
+    .emoji { font-size: 1.3rem; margin-right:.35rem }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <nav aria-label="Navigation">
+        <a href="../index.html">Start</a>
+        <a href="./index.html" aria-current="page">Mathe</a>
+        <a href="./pythagoras.html">Pythagoras</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <h1>Mathe – Übersicht</h1>
+    <p class="muted">Wähle ein Thema. Die Inhalte laufen in <code>/docs/mathe</code> und funktionieren direkt mit GitHub Pages.</p>
+
+    <div class="tools" role="search">
+      <input id="filter" type="search" placeholder="Themen filtern… (z.B. Pythagoras, Prozent)" aria-label="Themen filtern" />
+      <span class="muted" id="count"></span>
+    </div>
+
+    <section class="grid" id="tiles" aria-label="Themenkacheln">
+      <a class="card" href="./pythagoras.html" data-title="pythagoras" data-keywords="rechtwinklig dreieck satz a2 b2 c2">
+        <h2><span class="emoji">📐</span>Pythagoras <span class="tag">Interaktiv</span></h2>
+        <p class="muted">Rechner, Canvas‑Dreieck, Quiz & Aufgaben zu rechtwinkligen Dreiecken.</p>
+      </a>
+
+      <div class="card disabled" data-title="dreisatz" data-keywords="proportional verhältnis">
+        <h2><span class="emoji">🧮</span>Dreisatz <span class="tag soon">Bald</span></h2>
+        <p class="muted">Proportional & antiproportional – verständlich mit Beispielen.</p>
+      </div>
+
+      <div class="card disabled" data-title="prozentrechnen" data-keywords="prozente rabatt wachstum">
+        <h2><span class="emoji">📊</span>Prozentrechnen <span class="tag soon">Bald</span></h2>
+        <p class="muted">Grundwert, Prozentwert, Prozentsatz – alltagsnah erklärt.</p>
+      </div>
+
+      <div class="card disabled" data-title="gleichungen" data-keywords="linear gleichung umformen">
+        <h2><span class="emoji">🧩</span>Lineare Gleichungen <span class="tag soon">Bald</span></h2>
+        <p class="muted">Umformen, Lösen und Probe mit typischen Fehlerquellen.</p>
+      </div>
+
+      <div class="card disabled" data-title="geometrie" data-keywords="flächen umfang kreis">
+        <h2><span class="emoji">📏</span>Geometrie – Flächen & Umfang <span class="tag soon">Bald</span></h2>
+        <p class="muted">Formeln, Visualisierungen und Übungsaufgaben.</p>
+      </div>
+
+      <div class="card disabled" data-title="statistik" data-keywords="mittelwert median streuung">
+        <h2><span class="emoji">📈</span>Statistik Basics <span class="tag soon">Bald</span></h2>
+        <p class="muted">Lage‑ und Streuungsmaße kurz & knackig.</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Einfache Live‑Filterung der Kacheln
+    const input = document.getElementById('filter');
+    const tiles = Array.from(document.querySelectorAll('#tiles > *'));
+    const count = document.getElementById('count');
+    function update(){
+      const q = input.value.trim().toLowerCase();
+      let visible = 0;
+      tiles.forEach(el => {
+        const text = (el.getAttribute('data-title') + ' ' + (el.getAttribute('data-keywords')||'')).toLowerCase();
+        const show = !q || text.includes(q);
+        el.style.display = show ? '' : 'none';
+        if(show) visible++;
+      });
+      count.textContent = visible + ' Thema' + (visible===1?'':'s') + ' gefunden';
+    }
+    input.addEventListener('input', update);
+    update();
+  </script>
+</body>
+</html>
+
 

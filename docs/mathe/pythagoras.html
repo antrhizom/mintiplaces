@@ -1,373 +1,250 @@
-import React, { useState, useEffect } from 'react';
-import { CheckCircle, XCircle, RefreshCw, Play, Pause, Info } from 'lucide-react';
+<!-- =========================
+File path: docs/mathe/pythagoras.html
+Single, interaktive Lernseite zu Pythagoras. Verlinkt nur zurück zur bestehenden Startseite (../index.html)
+und zur bestehenden Mathematik-Übersicht (./index.html). Keine zusätzliche Startseite nötig.
+========================= -->
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pythagoras – Interaktive Lernseite</title>
+  <meta name="description" content="Satz des Pythagoras mit Rechner, Canvas‑Dreieck, Quiz und Aufgaben. Vollständig offline nutzbar." />
+  <style>
+    :root { --bg:#0b1220; --panel:#0f172a; --card:#111827; --ink:#e5e7eb; --muted:#94a3b8; --accent:#38bdf8; --ok:#22c55e; --warn:#facc15; --err:#ef4444; }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body { margin: 0; font: 16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif; color: var(--ink); background: radial-gradient(1200px 600px at 10% -20%, #0b2544, transparent), var(--bg); }
+    header { position: sticky; top: 0; backdrop-filter: saturate(1.2) blur(8px); background: color-mix(in oklab, var(--bg) 85%, black 15%); border-bottom: 1px solid #1f2937; z-index: 10; }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 1rem; }
+    nav a { color: var(--ink); text-decoration: none; padding: .5rem .75rem; border-radius: .6rem; display: inline-block; }
+    nav a:hover, nav a[aria-current="page"] { background: #1f2937; color: white; }
+    h1 { font-size: clamp(1.6rem, 2vw + 1rem, 2.4rem); margin: 1rem 0; }
+    h2 { font-size: 1.2rem; margin: 1.2rem 0 .4rem; }
+    .grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); align-items: start; }
+    .card { background: var(--card); border: 1px solid #1f2937; border-radius: 16px; padding: 1rem; box-shadow: 0 10px 24px rgba(0,0,0,.25); }
+    .muted { color: var(--muted); }
+    .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; background:#0b2544; padding:.2rem .4rem; border-radius:.4rem; }
+    label { display: block; margin-top: .5rem; }
+    input[type="number"] { width: 100%; padding: .55rem .7rem; border-radius: .6rem; border: 1px solid #243041; background: #0a1426; color: var(--ink); }
+    input[type="range"] { width: 100%; }
+    button { cursor: pointer; padding: .6rem .9rem; border: 1px solid #243041; background: #0a1426; color: var(--ink); border-radius: .6rem; }
+    button.primary { background: linear-gradient(180deg, #1e3a8a, #1f2937); border-color:#1e3a8a; }
+    .tag { display:inline-block; padding:.2rem .5rem; border-radius: 999px; background:#0b2544; color: var(--accent); font-size:.85rem }
+    details { background:#0a1426; border-radius:12px; border:1px solid #1f2937; padding:.6rem .8rem; }
+    details summary { cursor:pointer; }
+    .pill { border:1px solid #1f2937; background:#0a1426; padding:.2rem .5rem; border-radius:8px; }
+    .good { color: var(--ok); }
+    .bad { color: var(--err); }
+    canvas { width: 100%; height: 280px; background: #0a1426; border-radius: 12px; border: 1px solid #1f2937; }
+    .flex { display:flex; gap:.5rem; align-items:center }
+    .sr-only { position:absolute; left:-10000px; top:auto; width:1px; height:1px; overflow:hidden; }
+    .footer { border-top:1px solid #1f2937; color:var(--muted); margin-top:2rem }
+    .chip { display:inline-block; border:1px solid #1f2937; padding:.15rem .5rem; border-radius:999px; margin-right:.3rem }
+    .quiz li { margin:.4rem 0 }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <nav aria-label="Navigation">
+        <a href="../index.html">Start</a>
+        <a href="./index.html">Mathe</a>
+        <a href="./pythagoras.html" aria-current="page">Pythagoras</a>
+      </nav>
+    </div>
+  </header>
 
-const PythagorasLerntool = () => {
-  const [currentTab, setCurrentTab] = useState('visualization');
-  const [a, setA] = useState(3);
-  const [b, setB] = useState(4);
-  const [c, setC] = useState(5);
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [showAreas, setShowAreas] = useState(false);
-  
-  // Quiz Zustände
-  const [quizQuestion, setQuizQuestion] = useState(null);
-  const [userAnswer, setUserAnswer] = useState('');
-  const [quizFeedback, setQuizFeedback] = useState('');
-  const [score, setScore] = useState({ correct: 0, total: 0 });
-  
-  // Berechnung der Hypotenuse
-  const calculateC = (sideA, sideB) => Math.sqrt(sideA * sideA + sideB * sideB);
-  
-  // Animation für Flächenvisualisierung
-  useEffect(() => {
-    let interval;
-    if (isAnimating) {
-      interval = setInterval(() => {
-        setShowAreas(prev => !prev);
-      }, 1000);
+  <main class="wrap">
+    <h1>Pythagoras <span class="tag">Rechtwinklige Dreiecke</span></h1>
+    <p class="muted">Für ein rechtwinkliges Dreieck mit Katheten <span class="kbd">a</span>, <span class="kbd">b</span> und Hypotenuse <span class="kbd">c</span> gilt: <strong>a² + b² = c²</strong>.</p>
+
+    <section class="grid" aria-label="Interaktive Werkzeuge">
+      <!-- Rechner -->
+      <article class="card" aria-labelledby="rech-h">
+        <h2 id="rech-h">Pythagoras‑Rechner</h2>
+        <p class="muted">Gib zwei Seiten an, die dritte wird berechnet.</p>
+        <div class="grid" style="grid-template-columns:1fr 1fr;">
+          <div>
+            <label for="a">Kathete a</label>
+            <input id="a" type="number" min="0" step="any" placeholder="z.B. 3" />
+          </div>
+          <div>
+            <label for="b">Kathete b</label>
+            <input id="b" type="number" min="0" step="any" placeholder="z.B. 4" />
+          </div>
+          <div>
+            <label for="c">Hypotenuse c</label>
+            <input id="c" type="number" min="0" step="any" placeholder="z.B. 5" />
+          </div>
+        </div>
+        <div class="flex" style="margin-top:.8rem">
+          <button class="primary" id="solve">Berechnen</button>
+          <button id="clear">Zurücksetzen</button>
+          <span id="check" class="pill" aria-live="polite"></span>
+        </div>
+        <p class="muted" style="margin-top:.5rem">Hinweis: Wenn <em>c</em> leer ist, wird <em>c = √(a² + b²)</em> berechnet. Wenn eine Kathete fehlt, wird sie via <em>√(c² − andere²)</em> berechnet.</p>
+      </article>
+
+      <!-- Canvas Triangle -->
+      <article class="card" aria-labelledby="canvas-h">
+        <h2 id="canvas-h">Dreieck zum Schieben</h2>
+        <div class="grid" style="grid-template-columns:1fr 1fr; align-items:center">
+          <label> a: <input id="ra" type="range" min="1" max="12" step="0.5" value="3" /></label>
+          <label> b: <input id="rb" type="range" min="1" max="12" step="0.5" value="4" /></label>
+        </div>
+        <canvas id="tri" width="520" height="280" aria-label="Zeichnung eines rechtwinkligen Dreiecks"></canvas>
+        <p class="muted">Die Fläche des Quadrats über der Hypotenuse (<span class="kbd">c²</span>) ist gleich der Summe der Flächen über den Katheten (<span class="kbd">a² + b²</span>).</p>
+      </article>
+
+      <!-- Quiz -->
+      <article class="card" aria-labelledby="quiz-h">
+        <h2 id="quiz-h">Mini‑Quiz</h2>
+        <ol class="quiz">
+          <li>
+            <p>Ein rechtwinkliges Dreieck hat <em>a = 8</em>, <em>b = 6</em>. Wie groß ist <em>c</em>?</p>
+            <div class="flex">
+              <button data-q="1" data-a="10" class="ans">10</button>
+              <button data-q="1" data-a="11">11</button>
+              <button data-q="1" data-a="12">12</button>
+            </div>
+            <div id="q1" class="muted" aria-live="polite"></div>
+          </li>
+          <li>
+            <p>Welche Aussage ist korrekt?</p>
+            <div class="flex" style="flex-wrap:wrap">
+              <button data-q="2" data-a="A" class="ans">Bei beliebigen Dreiecken gilt a²+b²=c²</button>
+              <button data-q="2" data-a="B">Nur bei rechtwinkligen Dreiecken gilt a²+b²=c²</button>
+            </div>
+            <div id="q2" class="muted" aria-live="polite"></div>
+          </li>
+        </ol>
+      </article>
+    </section>
+
+    <section class="grid" aria-label="Theorie & Aufgaben">
+      <article class="card">
+        <h2>Beweis‑Idee (anschaulich)</h2>
+        <p>Lege auf jede Dreiecksseite ein Quadrat. Zerlege die beiden kleinen Quadrate in Teile, die sich lückenlos zum großen Quadrat zusammensetzen lassen. Diese Flächenargumentation zeigt: <strong>a² + b² = c²</strong>.</p>
+        <details>
+          <summary>Alternative: algebraisch mit ähnlichen Dreiecken</summary>
+          <p>Im rechtwinkligen Dreieck sind das große Dreieck und die beiden durch die Höhe zur Hypotenuse entstehenden Teildreiecke ähnlich. Über Verhältnisgleichungen erhält man <span class="kbd">a² = c·p</span> und <span class="kbd">b² = c·q</span> mit <span class="kbd">p+q=c</span>, also <span class="kbd">a² + b² = c(p+q) = c²</span>.</p>
+        </details>
+      </article>
+      <article class="card">
+        <h2>Aufgaben zum Üben</h2>
+        <ol>
+          <li>
+            <div class="flex" style="justify-content:space-between"><span>Dreieck mit a=9, b=12: Berechne c.</span><span class="chip">Erwartung: 15</span></div>
+            <details><summary>Lösung</summary><p>c = √(9²+12²) = √(81+144) = √225 = 15</p></details>
+          </li>
+          <li>
+            <div class="flex" style="justify-content:space-between"><span>Dreieck mit c=13, a=5: Berechne b.</span><span class="chip">Erwartung: 12</span></div>
+            <details><summary>Lösung</summary><p>b = √(13²−5²) = √(169−25) = √144 = 12</p></details>
+          </li>
+          <li>
+            <div class="flex" style="justify-content:space-between"><span>Prüfe, ob (7,24,25) ein rechtwinkliges Dreieck ist.</span><span class="chip">Erwartung: ja</span></div>
+            <details><summary>Lösung</summary><p>7²+24²=49+576=625=25² ⇒ rechtwinklig.</p></details>
+          </li>
+        </ol>
+      </article>
+    </section>
+
+    <p class="footer">© <span id="year"></span> – Datei: <code>docs/mathe/pythagoras.html</code></p>
+  </main>
+
+  <script>
+    // ---------- Rechner ----------
+    const A = document.getElementById('a');
+    const B = document.getElementById('b');
+    const C = document.getElementById('c');
+    const check = document.getElementById('check');
+    const solveBtn = document.getElementById('solve');
+    const clearBtn = document.getElementById('clear');
+
+    function toNum(x){ return x.value === '' ? NaN : Number(x.value); }
+    function round(x){ return Math.round(x * 1000) / 1000; }
+
+    function isRight(a,b,c){
+      if([a,b,c].some(x=>!Number.isFinite(x))) return false;
+      return Math.abs(a*a + b*b - c*c) < 1e-6; // tolerance
     }
-    return () => clearInterval(interval);
-  }, [isAnimating]);
-  
-  // Quiz-Fragen generieren
-  const generateQuizQuestion = () => {
-    const types = ['find_c', 'find_a', 'is_right_triangle'];
-    const type = types[Math.floor(Math.random() * types.length)];
-    
-    let question, answer, options;
-    
-    switch (type) {
-      case 'find_c':
-        const qa = Math.floor(Math.random() * 8) + 3;
-        const qb = Math.floor(Math.random() * 8) + 3;
-        const qc = calculateC(qa, qb);
-        question = `Ein rechtwinkliges Dreieck hat die Katheten a = ${qa} und b = ${qb}. Wie lang ist die Hypotenuse c?`;
-        answer = qc.toFixed(2);
-        break;
-        
-      case 'find_a':
-        const qc2 = Math.floor(Math.random() * 8) + 8;
-        const qb2 = Math.floor(Math.random() * 6) + 3;
-        const qa2 = Math.sqrt(qc2 * qc2 - qb2 * qb2);
-        question = `Ein rechtwinkliges Dreieck hat die Hypotenuse c = ${qc2} und eine Kathete b = ${qb2}. Wie lang ist die andere Kathete a?`;
-        answer = qa2.toFixed(2);
-        break;
-        
-      case 'is_right_triangle':
-        const sides = Math.random() > 0.5 ? [3, 4, 5] : [5, 7, 9];
-        const [s1, s2, s3] = sides.sort((a, b) => a - b);
-        question = `Ist ein Dreieck mit den Seiten ${s1}, ${s2}, ${s3} rechtwinklig?`;
-        answer = (s1*s1 + s2*s2 === s3*s3) ? 'ja' : 'nein';
-        options = ['ja', 'nein'];
-        break;
+
+    solveBtn?.addEventListener('click', () => {
+      let a = toNum(A), b = toNum(B), c = toNum(C);
+      const have = [!isNaN(a), !isNaN(b), !isNaN(c)].filter(Boolean).length;
+      if(have < 2){ check.textContent = 'Bitte mindestens zwei Längen eingeben.'; check.style.color = 'var(--warn)'; return; }
+      if(isNaN(c)) c = Math.sqrt(a*a + b*b);
+      else if(isNaN(a)) a = Math.sqrt(c*c - b*b);
+      else if(isNaN(b)) b = Math.sqrt(c*c - a*a);
+      if([a,b,c].some(x=>!Number.isFinite(x))){ check.textContent = 'Ungültige Kombination – Hypotenuse muss die längste Seite sein.'; check.style.color = 'var(--err)'; return; }
+      A.value = round(a); B.value = round(b); C.value = round(c);
+      if(isRight(a,b,c)){ check.textContent = 'Passt: a² + b² = c²'; check.style.color = 'var(--ok)'; }
+      else { check.textContent = 'Warnung: Kein rechtwinkliges Dreieck'; check.style.color = 'var(--warn)'; }
+      // sync sliders & canvas
+      ra.value = a; rb.value = b; draw();
+    });
+
+    clearBtn?.addEventListener('click', ()=>{ A.value = B.value = C.value = ''; check.textContent=''; });
+
+    // ---------- Canvas Triangle ----------
+    const ra = document.getElementById('ra');
+    const rb = document.getElementById('rb');
+    const canvas = document.getElementById('tri');
+    const ctx = canvas.getContext('2d');
+
+    function draw(){
+      const a = Number(ra.value), b = Number(rb.value);
+      const c = Math.hypot(a,b);
+      // padding & scale to fit canvas
+      const pad = 24; const w = canvas.width - 2*pad; const h = canvas.height - 2*pad;
+      const s = Math.min(w/a, h/b);
+      const ax = pad, ay = canvas.height - pad; // right angle at A
+      const bx = ax + a*s, by = ay; // along x
+      const cx = ax, cy = ay - b*s; // along y
+
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      // grid
+      ctx.globalAlpha = .25; ctx.beginPath();
+      for(let x=pad; x<canvas.width-pad; x+=20){ ctx.moveTo(x,pad); ctx.lineTo(x,canvas.height-pad); }
+      for(let y=pad; y<canvas.height-pad; y+=20){ ctx.moveTo(pad,y); ctx.lineTo(canvas.width-pad,y); }
+      ctx.strokeStyle = '#1f2937'; ctx.stroke(); ctx.globalAlpha = 1;
+      // triangle
+      ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(bx,by); ctx.lineTo(cx,cy); ctx.closePath();
+      ctx.fillStyle = '#0b2544'; ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2; ctx.fill(); ctx.stroke();
+      // right angle square
+      ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(ax+18,ay); ctx.lineTo(ax+18,ay-18); ctx.lineTo(ax,ay-18); ctx.closePath();
+      ctx.fillStyle = '#1e293b'; ctx.fill();
+      // labels
+      ctx.fillStyle = '#e5e7eb'; ctx.font = '14px ui-monospace,monospace';
+      ctx.fillText(`a = ${a}`, (ax+bx)/2, ay+18);
+      ctx.fillText(`b = ${b}`, ax-36, (ay+cy)/2);
+      ctx.fillText(`c = ${Math.round(c*100)/100}`, (bx+cx)/2 - 10, (by+cy)/2 - 6);
     }
-    
-    setQuizQuestion({ question, answer, options, type });
-    setUserAnswer('');
-    setQuizFeedback('');
-  };
-  
-  const checkAnswer = () => {
-    const isCorrect = Math.abs(parseFloat(userAnswer) - parseFloat(quizQuestion.answer)) < 0.1 || 
-                     userAnswer.toLowerCase() === quizQuestion.answer.toLowerCase();
-    
-    setScore(prev => ({
-      correct: prev.correct + (isCorrect ? 1 : 0),
-      total: prev.total + 1
-    }));
-    
-    setQuizFeedback(isCorrect ? 'correct' : 'incorrect');
-    setTimeout(() => generateQuizQuestion(), 2000);
-  };
+    ra?.addEventListener('input', ()=>{ draw(); A.value = round(Number(ra.value)); });
+    rb?.addEventListener('input', ()=>{ draw(); B.value = round(Number(rb.value)); });
 
-  const VisualizationTab = () => (
-    <div className="space-y-6">
-      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-lg">
-        <h3 className="text-xl font-bold text-gray-800 mb-4">Interaktive Visualisierung</h3>
-        
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">Kathete a: {a}</label>
-              <input
-                type="range"
-                min="1"
-                max="10"
-                value={a}
-                onChange={(e) => setA(Number(e.target.value))}
-                className="w-full"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium mb-2">Kathete b: {b}</label>
-              <input
-                type="range"
-                min="1"
-                max="10"
-                value={b}
-                onChange={(e) => setB(Number(e.target.value))}
-                className="w-full"
-              />
-            </div>
-            
-            <div className="bg-white p-4 rounded border">
-              <p className="font-semibold text-lg">
-                Hypotenuse c = √(a² + b²) = √({a}² + {b}²) = √({a*a + b*b}) = {calculateC(a, b).toFixed(2)}
-              </p>
-            </div>
-            
-            <div className="flex gap-2">
-              <button
-                onClick={() => setIsAnimating(!isAnimating)}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-              >
-                {isAnimating ? <Pause size={16} /> : <Play size={16} />}
-                {isAnimating ? 'Animation stoppen' : 'Flächen animieren'}
-              </button>
-            </div>
-          </div>
-          
-          <div className="bg-white p-4 rounded border">
-            <svg width="300" height="250" viewBox="0 0 300 250">
-              {/* Koordinatensystem */}
-              <line x1="20" y1="220" x2="280" y2="220" stroke="#e5e5e5" strokeWidth="1" />
-              <line x1="20" y1="220" x2="20" y2="20" stroke="#e5e5e5" strokeWidth="1" />
-              
-              {/* Dreieck */}
-              <polygon
-                points={`20,220 ${20 + a * 20},220 20,${220 - b * 20}`}
-                fill="rgba(59, 130, 246, 0.3)"
-                stroke="#3b82f6"
-                strokeWidth="3"
-              />
-              
-              {/* Quadrate über den Seiten */}
-              {showAreas && (
-                <>
-                  {/* Quadrat über Kathete a */}
-                  <rect
-                    x="20"
-                    y="220"
-                    width={a * 20}
-                    height={a * 20}
-                    fill="rgba(239, 68, 68, 0.4)"
-                    stroke="#ef4444"
-                    strokeWidth="2"
-                  />
-                  {/* Quadrat über Kathete b */}
-                  <rect
-                    x={20 - b * 20}
-                    y={220 - b * 20}
-                    width={b * 20}
-                    height={b * 20}
-                    fill="rgba(34, 197, 94, 0.4)"
-                    stroke="#22c55e"
-                    strokeWidth="2"
-                  />
-                  {/* Quadrat über Hypotenuse */}
-                  <g transform={`translate(${20 + a * 10}, ${220 - b * 10}) rotate(${-Math.atan2(b, a) * 180 / Math.PI})`}>
-                    <rect
-                      x={-calculateC(a, b) * 10}
-                      y={-calculateC(a, b) * 10}
-                      width={calculateC(a, b) * 20}
-                      height={calculateC(a, b) * 20}
-                      fill="rgba(168, 85, 247, 0.4)"
-                      stroke="#a855f7"
-                      strokeWidth="2"
-                    />
-                  </g>
-                </>
-              )}
-              
-              {/* Beschriftungen */}
-              <text x={20 + a * 10} y="240" textAnchor="middle" className="text-sm font-medium">a = {a}</text>
-              <text x="5" y={220 - b * 10} textAnchor="middle" className="text-sm font-medium" transform={`rotate(-90, 5, ${220 - b * 10})`}>b = {b}</text>
-              <text x={20 + a * 10 - 15} y={220 - b * 10 + 15} textAnchor="middle" className="text-sm font-medium" transform={`rotate(${-Math.atan2(b, a) * 180 / Math.PI}, ${20 + a * 10 - 15}, ${220 - b * 10 + 15})`}>c = {calculateC(a, b).toFixed(1)}</text>
-              
-              {/* Rechter Winkel Symbol */}
-              <rect x="20" y="200" width="20" height="20" fill="none" stroke="#666" strokeWidth="1" />
-            </svg>
-            
-            <div className="mt-4 text-sm text-gray-600">
-              <p><span className="inline-block w-4 h-4 bg-red-400 mr-2"></span>Fläche von a² = {a*a}</p>
-              <p><span className="inline-block w-4 h-4 bg-green-400 mr-2"></span>Fläche von b² = {b*b}</p>
-              <p><span className="inline-block w-4 h-4 bg-purple-400 mr-2"></span>Fläche von c² = {(a*a + b*b)}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+    // ---------- Quiz ----------
+    const out1 = document.getElementById('q1');
+    const out2 = document.getElementById('q2');
+    document.querySelectorAll('button[data-q]')?.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const q = btn.getAttribute('data-q');
+        const a = btn.getAttribute('data-a');
+        if(q === '1'){
+          if(a === '10'){ out1.innerHTML = '<span class="good">Richtig!</span> √(8²+6²)=√(100)=10'; }
+          else { out1.innerHTML = '<span class="bad">Leider falsch.</span> Tipp: 6‑8‑10 ist ein klassisches Tripel.'; }
+        }
+        if(q === '2'){
+          if(a === 'B'){ out2.innerHTML = '<span class="good">Korrekt:</span> Der Satz gilt nur für rechtwinklige Dreiecke.'; }
+          else { out2.innerHTML = '<span class="bad">Nope – gilt nicht für beliebige Dreiecke.</span>'; }
+        }
+      });
+    });
 
-  const QuizTab = () => (
-    <div className="space-y-6">
-      <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-lg">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-bold text-gray-800">Quiz & Übungen</h3>
-          <div className="text-sm bg-white px-3 py-1 rounded-full">
-            Score: {score.correct}/{score.total} ({score.total > 0 ? Math.round(score.correct/score.total*100) : 0}%)
-          </div>
-        </div>
-        
-        {!quizQuestion && (
-          <div className="text-center">
-            <button
-              onClick={generateQuizQuestion}
-              className="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
-            >
-              Quiz starten
-            </button>
-          </div>
-        )}
-        
-        {quizQuestion && (
-          <div className="bg-white p-6 rounded-lg border space-y-4">
-            <p className="text-lg font-medium">{quizQuestion.question}</p>
-            
-            {quizQuestion.options ? (
-              <div className="space-y-2">
-                {quizQuestion.options.map(option => (
-                  <button
-                    key={option}
-                    onClick={() => setUserAnswer(option)}
-                    className={`block w-full text-left px-4 py-2 rounded border transition-colors ${
-                      userAnswer === option ? 'bg-blue-100 border-blue-500' : 'hover:bg-gray-50'
-                    }`}
-                  >
-                    {option}
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <input
-                type="number"
-                step="0.01"
-                value={userAnswer}
-                onChange={(e) => setUserAnswer(e.target.value)}
-                placeholder="Deine Antwort..."
-                className="w-full px-4 py-2 border rounded-lg"
-              />
-            )}
-            
-            <button
-              onClick={checkAnswer}
-              disabled={!userAnswer}
-              className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Antwort prüfen
-            </button>
-            
-            {quizFeedback && (
-              <div className={`flex items-center gap-2 p-3 rounded ${
-                quizFeedback === 'correct' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-              }`}>
-                {quizFeedback === 'correct' ? <CheckCircle size={20} /> : <XCircle size={20} />}
-                {quizFeedback === 'correct' ? 
-                  'Richtig! Gut gemacht!' : 
-                  `Leider falsch. Die richtige Antwort ist: ${quizQuestion.answer}`
-                }
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-
-  const TheoryTab = () => (
-    <div className="space-y-6">
-      <div className="bg-gradient-to-br from-purple-50 to-violet-50 p-6 rounded-lg">
-        <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-          <Info size={24} />
-          Theorie: Der Satz des Pythagoras
-        </h3>
-        
-        <div className="space-y-6">
-          <div className="bg-white p-4 rounded-lg border-l-4 border-blue-500">
-            <h4 className="font-bold text-lg mb-2">Die Formel</h4>
-            <p className="text-2xl font-mono bg-gray-100 p-3 rounded text-center">
-              a² + b² = c²
-            </p>
-            <p className="mt-2 text-gray-700">
-              In einem rechtwinkligen Dreieck ist die Summe der Quadrate der beiden Katheten (a und b) 
-              gleich dem Quadrat der Hypotenuse (c).
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="bg-white p-4 rounded-lg border">
-              <h4 className="font-bold mb-2">Wichtige Begriffe</h4>
-              <ul className="space-y-2 text-sm">
-                <li><strong>Kathete:</strong> Die beiden kürzeren Seiten eines rechtwinkligen Dreiecks</li>
-                <li><strong>Hypotenuse:</strong> Die längste Seite, gegenüber dem rechten Winkel</li>
-                <li><strong>Rechter Winkel:</strong> Ein Winkel von genau 90°</li>
-              </ul>
-            </div>
-            
-            <div className="bg-white p-4 rounded-lg border">
-              <h4 className="font-bold mb-2">Anwendungen</h4>
-              <ul className="space-y-2 text-sm">
-                <li>• Entfernungen berechnen</li>
-                <li>• Bauwesen und Architektur</li>
-                <li>• Navigation und GPS</li>
-                <li>• Computergrafik</li>
-              </ul>
-            </div>
-          </div>
-          
-          <div className="bg-white p-4 rounded-lg border">
-            <h4 className="font-bold mb-2">Berühmte Pythagoräische Tripel</h4>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-              {[[3,4,5], [5,12,13], [8,15,17], [7,24,25]].map(([a, b, c]) => (
-                <div key={`${a}-${b}-${c}`} className="bg-gray-50 p-2 rounded">
-                  <div className="font-mono">{a}² + {b}² = {c}²</div>
-                  <div className="text-sm text-gray-600">{a*a} + {b*b} = {c*c}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  return (
-    <div className="max-w-6xl mx-auto p-6 bg-white">
-      <h1 className="text-3xl font-bold text-center mb-2 text-gray-800">
-        Pythagoras Lerntool
-      </h1>
-      <p className="text-center text-gray-600 mb-8">
-        Lerne und verstehe den Satz des Pythagoras interaktiv
-      </p>
-      
-      <div className="flex justify-center mb-6">
-        <div className="bg-gray-100 p-1 rounded-lg flex">
-          {[
-            { id: 'visualization', label: 'Visualisierung' },
-            { id: 'theory', label: 'Theorie' },
-            { id: 'quiz', label: 'Quiz' }
-          ].map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setCurrentTab(tab.id)}
-              className={`px-6 py-2 rounded-md transition-colors ${
-                currentTab === tab.id
-                  ? 'bg-white shadow-md text-blue-600 font-medium'
-                  : 'text-gray-600 hover:text-gray-800'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-      </div>
-      
-      {currentTab === 'visualization' && <VisualizationTab />}
-      {currentTab === 'theory' && <TheoryTab />}
-      {currentTab === 'quiz' && <QuizTab />}
-    </div>
-  );
-};
-
-export default PythagorasLerntool;
+    // init
+    document.getElementById('year').textContent = new Date().getFullYear();
+    draw();
+  </script>
+</body>
+</html>

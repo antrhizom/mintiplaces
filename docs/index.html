@@ -1,1 +1,129 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MINT-Lernseiten</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Heller Hintergrund */
+            color: #1a202c; /* Dunkler Text */
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 90%;
+            margin: auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px; /* Abstand zwischen den Kacheln */
+        }
+        .card {
+            flex: 1 1 250px; /* Basis für responsive Kacheln */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+        .card a {
+            text-decoration: none;
+            color: #fff;
+            font-weight: 600;
+            font-size: 1.5em;
+        }
+        .card p {
+            font-size: 1em;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 5px;
+        }
+        .card span {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+        /* Farben für jede Kachel */
+        .math {
+            background-color: #4CAF50; /* Grün */
+        }
+        .info {
+            background-color: #2196F3; /* Blau */
+        }
+        .bio {
+            background-color: #FFC107; /* Gelb */
+        }
+        .chem {
+            background-color: #9C27B0; /* Lila */
+        }
+        .phys {
+            background-color: #FF5722; /* Orange */
+        }
+        .tech {
+            background-color: #00BCD4; /* Türkis */
+        }
+        .header-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .header-section h1 {
+            color: #334155;
+            font-size: 2.5em;
+            font-weight: 600;
+        }
+        .header-section p {
+            color: #64748b;
+            font-size: 1.1em;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header-section">
+    <h1>Willkommen auf den MINT-Lernseiten 👋</h1>
+    <p>Hier findest du Links zu den wichtigsten MINT-Bereichen, um dein Wissen zu vertiefen.</p>
+</div>
+
+<div class="container">
+    <div class="card math">
+        <span>🧮</span>
+        <!-- Relative Pfade zu den Unterordnern -->
+        <a href="mathematik/index.html" target="_self">Mathematik</a>
+    </div>
+    <div class="card info">
+        <span>💻</span>
+        <a href="informatik/index.html" target="_self">Informatik</a>
+    </div>
+    <div class="card bio">
+        <span>🧬</span>
+        <a href="biologie/index.html" target="_self">Biologie</a>
+    </div>
+    <div class="card chem">
+        <span>🧪</span>
+        <a href="chemie/index.html" target="_self">Chemie</a>
+    </div>
+    <div class="card phys">
+        <span>⚛️</span>
+        <a href="physik/index.html" target="_self">Physik</a>
+    </div>
+    <div class="card tech">
+        <span>⚙️</span>
+        <a href="technik/index.html" target="_self">Technik</a>
+    </div>
+</div>
+
+</body>
+</html>
 
